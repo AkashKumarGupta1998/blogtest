@@ -310,6 +310,43 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // ... [Rest of the PostsManager methods remain the same as previous implementation]
         // (cancelEditing, resetForm, renderPosts, createPostCard, etc.)
+                // Cancel editing and reset form
+        cancelEditing() {
+            this.resetForm();
+            this.state.editingPostId = null;
+        },
+
+        // Reset form fields
+        resetForm() {
+            this.elements.postTitle.value = '';
+            this.elements.postContent.value = '';
+            this.elements.postImage.value = '';
+            this.elements.postTags.value = '';
+            this.elements.postPublished.checked = false;
+            this.elements.contentPreview.innerHTML = '';
+        },
+
+        // Render posts based on current filter and page
+        renderPosts() {
+            const filteredPosts = this.getFilteredPosts();
+            const postsToShow = filteredPosts.slice(0, this.state.currentPage * this.state.postsPerPage);
+            
+            this.elements.postsContainer.innerHTML = postsToShow.map(post => this.createPostCard(post)).join('');
+            
+            // Add event listeners to action buttons
+            document.querySelectorAll('.edit-post').forEach(btn => {
+                btn.addEventListener('click', () => this.editPost(btn.dataset.id));
+            });
+            
+            document.querySelectorAll('.delete-post').forEach(btn => {
+                btn.addEventListener('click', () => this.deletePost(btn.dataset.id));
+            });
+            
+            // Show/hide load more button
+            this.elements.loadMoreBtn.style.display = 
+                filteredPosts.length > this.state.currentPage * this.state.postsPerPage ? 'block' : 'none';
+        },
+
     };
 
     // Initialize Admin Authentication
